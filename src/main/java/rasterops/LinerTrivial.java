@@ -1,5 +1,6 @@
 package rasterops;
 
+import model.Point;
 import rasterization.Raster;
 
 import static java.lang.Math.abs;
@@ -48,6 +49,10 @@ public class LinerTrivial implements Liner {
                 rastr.setColor(color, c, r);
             }
         }
-
     }
+
+    public void drawLine(Raster rastr, Point p1, Point p2, int color){
+        drawLine(rastr, p1.x, p1.y, p2.x, p2.y, color);
+    }
+
 }

@@ -1,3 +1,4 @@
+import model.Point;
 import rasterization.RasterBI;
 import rasterops.LinerTrivial;
 
@@ -26,9 +27,8 @@ public class Canvas {
     private JFrame frame;
     private JPanel panel;
     private RasterBI img;
-    private int pointx;
-    private int pointy;
-    private LinerTrivial liner = new LinerTrivial();
+    private Point anchorPoint;
+    private LinerTrivial liner;
     public Canvas(int width, int height) {
         frame = new JFrame();
 
@@ -38,7 +38,8 @@ public class Canvas {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         img = new RasterBI(width, height);
-
+        liner = new LinerTrivial();
+        anchorPoint = new Point(-1, -1);
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
 
@@ -56,67 +57,59 @@ public class Canvas {
         frame.setVisible(true);
 
         panel.requestFocusInWindow();
+        clear();
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-                    for(int i = 0; i < 50; i++){
-                        img.setColor(0xffff00, img.getWidth()/2 + i, img.getHeight()/2);
-                    }
-                    present(panel.getGraphics());
-                };
                 if(e.getKeyCode() == KeyEvent.VK_C){
                     img.clear(0x2f2f2f);
+                    resetAnchorPoint();
+                    img.present(panel.getGraphics());
                     //TODO add deletion of all data structures (Points, Lines, Polygones)
                 }
             }
         });
-
-        pointx = -1;
-        pointy = -1;
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon //TODO later
-                if(pointx != -1 && pointy != -1){
-                    liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
+                if(anchorPoint.x != -1 && anchorPoint.y != -1){
+                    liner.drawLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                 }
                 present(panel.getGraphics());//
-                pointx = e.getX();
-                pointy = e.getY();
+                anchorPoint.x = e.getX();
+                anchorPoint.y = e.getY();
             }
         });
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(pointx != -1 && pointy != -1){
-                    liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
+                if(anchorPoint.x != -1 && anchorPoint.y!= -1){
+                    liner.drawLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                 }
                 img.present(panel.getGraphics());
-                pointx = e.getX();
-                pointy = e.getY();
+                anchorPoint.x = e.getX();
+                anchorPoint.y = e.getY();
             }
         });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                pointx = -1;
-                pointy = -1;
+                resetAnchorPoint();
             }
         });
-
-
     }
+    private void resetAnchorPoint(){
+        anchorPoint.x = -1;
+        anchorPoint.y = -1;
+    }
+
     public void clear() {
         img.clear(0x2f2f2f);
-//		Graphics gr = img.getGraphics();
-//		gr.setColor(new Color(0x2f2f2f));
-//		gr.fillRect(0, 0, img.getWidth(), img.getHeight());
     }
 
     public void present(Graphics graphics) {
         img.present(graphics);
-//		graphics.drawImage(img, 0, 0, null);
     }
 
     public void draw(int x, int y, int rgb ) {
@@ -125,7 +118,6 @@ public class Canvas {
 
     public void start() {
 //        liner.drawLine(img,300, 400, 300, 200, 0xff0000); //test vertical line
-
         panel.repaint();
     }
 
