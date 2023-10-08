@@ -68,26 +68,40 @@ public class Canvas {
             }
         });
 
-        pointx = img.getWidth()/2;
-        pointy = img.getHeight()/2;
+        pointx = -1;
+        pointy = -1;
         panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
-                present(panel.getGraphics());
+            public void mouseClicked(MouseEvent e) { // for polygon //TODO later
+                if(pointx != -1 && pointy != -1){
+                    liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
+                }
+                present(panel.getGraphics());//
+                pointx = e.getX();
+                pointy = e.getY();
+            }
+        });
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if(pointx != -1 && pointy != -1){
+                    liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
+                }
+                img.present(panel.getGraphics());
                 pointx = e.getX();
                 pointy = e.getY();
             }
         });
 
-        //Not working
-//        panel.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseDragged(MouseEvent e) {
-//                liner.drawLine(img, pointx, pointy, e.getX(), e.getY(), 0xff0000);
-//                present(panel.getGraphics());
-//            }
-//        });
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                pointx = -1;
+                pointy = -1;
+            }
+        });
+
+
     }
     public void clear() {
         img.clear(0x2f2f2f);
@@ -102,13 +116,11 @@ public class Canvas {
     }
 
     public void draw(int x, int y, int rgb ) {
-//		clear();
         img.setColor(rgb, x, y);
     }
 
     public void start() {
-//		LinerTrivial liner = new LinerTrivial();
-        liner.drawLine(img,300, 400, 300, 200, 0xff0000); //test vertical line
+//        liner.drawLine(img,300, 400, 300, 200, 0xff0000); //test vertical line
 
         panel.repaint();
     }
