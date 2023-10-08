@@ -1,3 +1,4 @@
+import model.Line;
 import model.Point;
 import rasterization.RasterBI;
 import rasterops.LinerTrivial;
@@ -72,19 +73,16 @@ public class Canvas {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon //TODO later
-                if(anchorPoint.x != -1 && anchorPoint.y != -1){
-                    liner.drawLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
-                }
-                present(panel.getGraphics());//
-                anchorPoint.x = e.getX();
-                anchorPoint.y = e.getY();
+                //save point (e.getX(), e.getY()) to new Polygon
+                // get the last point of Polygon and draw a line between two points
+
             }
         });
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    liner.drawLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
                 }
                 img.present(panel.getGraphics());
                 anchorPoint.x = e.getX();

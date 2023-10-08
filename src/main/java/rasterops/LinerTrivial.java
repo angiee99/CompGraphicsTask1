@@ -1,10 +1,9 @@
 package rasterops;
 
+import model.Line;
 import model.Point;
 import rasterization.Raster;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
 
 public class LinerTrivial implements Liner {
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color){
@@ -55,4 +54,7 @@ public class LinerTrivial implements Liner {
         drawLine(rastr, p1.x, p1.y, p2.x, p2.y, color);
     }
 
+    public void drawLine(Raster rastr, Line line){
+        drawLine(rastr, line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor());
+    }
 }
