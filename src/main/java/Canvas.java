@@ -65,6 +65,10 @@ public class Canvas {
                     }
                     present(panel.getGraphics());
                 };
+                if(e.getKeyCode() == KeyEvent.VK_C){
+                    img.clear(0x2f2f2f);
+                    //TODO add deletion of all data structures (Points, Lines, Polygones)
+                }
             }
         });
 
