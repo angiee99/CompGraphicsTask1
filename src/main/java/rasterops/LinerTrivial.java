@@ -17,15 +17,20 @@ public class LinerTrivial implements Liner {
                 y2 = temp;
             }
 
-            //rasterize
             final double k = (y2 - y1) / (x2 - x1);
-            System.out.println(k);
-            final double q = y1 - k * x1;
-            for (int c = (int) x1; c < x2; c++) {
-                int r = (int) (k * c + q);
-                rastr.setColor(color, c, r);
-            }
+//            final double q = y1 - k * x1;
+            int x = (int)Math.round(x1);
+            double y = y1;
 
+            do{
+                rastr.setColor(color, x, (int)Math.round(y));
+                x += 1;
+                y += k;
+            } while (x <= x2);
+//            for (int c = (int) x1; c < x2; c++) {
+//                int r = (int) (k * c + q);
+//                rastr.setColor(color, c, r);
+//            }
         }
         else{ // ridici osa x
             if(y1 > y2){ //swap
@@ -37,16 +42,15 @@ public class LinerTrivial implements Liner {
                 y2 = temp;
             }
             double k = (y2 - y1) / (x2 - x1);
-            double q = y1 - k * x1;
-            System.out.println(k);
+            double x = x1;
+            int y = (int)Math.round(y1);
+//            double q = y1 - k * x1;
+            do{
+                rastr.setColor(color, (int)Math.round(x), y);
+                x += 1/k;
+                y += 1;
+            } while (y <= y2);
 
-            for (int r = (int) y1; r < y2; r++) {
-                int c = (int) ((r - q)/k);
-                if(x1 == x2){
-                    c = (int)x1;
-                }
-                rastr.setColor(color, c, r);
-            }
         }
     }
 
