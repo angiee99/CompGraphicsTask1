@@ -1,6 +1,7 @@
 import model.Line;
 import model.Point;
 import rasterization.RasterBI;
+import rasterops.LinerDashed;
 import rasterops.LinerTrivial;
 
 import java.awt.BorderLayout;
@@ -30,6 +31,7 @@ public class Canvas {
     private RasterBI img;
     private Point anchorPoint;
     private LinerTrivial liner;
+    private LinerDashed dashedLiner;
     public Canvas(int width, int height) {
         frame = new JFrame();
 
@@ -40,6 +42,7 @@ public class Canvas {
 
         img = new RasterBI(width, height);
         liner = new LinerTrivial();
+        dashedLiner = new LinerDashed();
         anchorPoint = new Point(-1, -1);
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -115,7 +118,7 @@ public class Canvas {
     }
 
     public void start() {
-//        liner.drawLine(img,300, 400, 300, 200, 0xff0000); //test vertical line
+        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test vertical line
         panel.repaint();
     }
 
