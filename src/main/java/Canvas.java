@@ -3,6 +3,7 @@ import model.Point;
 import rasterization.RasterBI;
 import rasterops.LinerDashed;
 import rasterops.LinerTrivial;
+import rasterops.PolygonerTrivial;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,6 +33,7 @@ public class Canvas {
     private Point anchorPoint;
     private LinerTrivial liner;
     private LinerDashed dashedLiner;
+    private PolygonerTrivial polygoner;
     public Canvas(int width, int height) {
         frame = new JFrame();
 
@@ -43,6 +45,8 @@ public class Canvas {
         img = new RasterBI(width, height);
         liner = new LinerTrivial();
         dashedLiner = new LinerDashed();
+        polygoner = new PolygonerTrivial(0x008000, 0x2f2f2f);
+
         anchorPoint = new Point(-1, -1);
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -76,6 +80,8 @@ public class Canvas {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon //TODO later
+                polygoner.addVertex(img, new Point(e.getX(), e.getY()));
+                img.present(panel.getGraphics());
                 //save point (e.getX(), e.getY()) to new Polygon
                 // get the last point of Polygon and draw a line between two points
 
