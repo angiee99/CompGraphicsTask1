@@ -96,7 +96,8 @@ public class Canvas {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                resetAnchorPoint();
+            // add a Line to some object collection maybe
+
             }
         });
     }
