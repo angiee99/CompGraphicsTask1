@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -34,6 +35,9 @@ public class Canvas {
     private LinerTrivial liner;
     private LinerDashed dashedLiner;
     private PolygonerTrivial polygoner;
+
+    //struktury
+    private ArrayList<Line> lineList;
     public Canvas(int width, int height) {
         frame = new JFrame();
 
@@ -47,6 +51,7 @@ public class Canvas {
         dashedLiner = new LinerDashed();
         polygoner = new PolygonerTrivial(0x008000, 0x2f2f2f);
 
+        lineList = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -72,6 +77,8 @@ public class Canvas {
                 if(e.getKeyCode() == KeyEvent.VK_C){
                     img.clear(0x2f2f2f);
                     resetAnchorPoint();
+                    lineList.clear();
+
                     img.present(panel.getGraphics());
                     //TODO add deletion of all data structures (Points, Lines, Polygones)
                 }
@@ -103,11 +110,19 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                    Line current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+//                    liner.drawLine(img, current);
+                    //
+                    lineList.add(current);
+                    for (Line line: lineList) {
+                        liner.drawLine(img, line);
+                    }
                     img.present(panel.getGraphics());
+
                     resetAnchorPoint();
+                   // add a Line to line collection
                 }
-            // add a Line to some object collection maybe
+
             }
         });
     }

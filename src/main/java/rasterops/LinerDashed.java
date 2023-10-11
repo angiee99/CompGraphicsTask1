@@ -24,7 +24,7 @@ public class LinerDashed implements Liner{
 
             do{
                 rastr.setColor(color, x, (int)Math.round(y));
-                if(step == 10) {
+                if(step == 5) {
                     x += step;
                     step = 0;
                 }
@@ -50,7 +50,7 @@ public class LinerDashed implements Liner{
             do{
                 rastr.setColor(color, (int)Math.round(x), y);
                 x += 1/k;
-                if(step == 10){
+                if(step == 5){
                     y += step;
                     step = 0;
                 }
