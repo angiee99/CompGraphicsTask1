@@ -19,10 +19,6 @@ public class PolygonerTrivial implements Polygoner{
     public Polygon getPolygon(){
         return this.polygon;
     }
-    public Liner getLiner() {
-        return liner;
-    }
-
     public int getColor() {
         return color;
     }
@@ -30,7 +26,6 @@ public class PolygonerTrivial implements Polygoner{
     public void setColor(int color) {
         this.color = color;
     }
-
 
     @Override
     public void drawEdge(Raster raster, Point p1, Point p2, int color) {

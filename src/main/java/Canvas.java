@@ -82,28 +82,32 @@ public class Canvas {
             public void mouseClicked(MouseEvent e) { // for polygon //TODO later
                 polygoner.addVertex(img, new Point(e.getX(), e.getY()));
                 img.present(panel.getGraphics());
-                //save point (e.getX(), e.getY()) to new Polygon
-                // get the last point of Polygon and draw a line between two points
-
             }
         });
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                if(anchorPoint.x == -1 && anchorPoint.y== -1){
+                    anchorPoint.x = e.getX();
+                    anchorPoint.y = e.getY();
                 }
-                img.present(panel.getGraphics());
-                anchorPoint.x = e.getX();
-                anchorPoint.y = e.getY();
+                else if(anchorPoint.x != -1 && anchorPoint.y!= -1){
+                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                    img.present(panel.getGraphics());
+                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
+                }
             }
         });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
+                if(anchorPoint.x != -1 && anchorPoint.y!= -1){
+                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                    img.present(panel.getGraphics());
+                    resetAnchorPoint();
+                }
             // add a Line to some object collection maybe
-
             }
         });
     }
@@ -125,7 +129,7 @@ public class Canvas {
     }
 
     public void start() {
-        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test vertical line
+//        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test dashed line
         panel.repaint();
     }
 
