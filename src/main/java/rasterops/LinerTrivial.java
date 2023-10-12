@@ -72,6 +72,7 @@ public class LinerTrivial implements Liner {
         double d = dy/dx;
         final double k = Math.abs(d);
         System.out.println("k = " + k);
+
         if(k == 1.00000 || k == 0 || p1.x == p2.x){
             return new Line(p1, p2, color);
         }
@@ -86,8 +87,14 @@ public class LinerTrivial implements Liner {
             //diagonal
             System.out.println("diagonal");
             System.out.println("d =" + d);
-//            endPoint = new Point(p2.x, ((p2.x - p1.x)*d + p1.y));
-            endPoint = new Point(p2.x, (p1.y - Math.abs(dx)));
+
+            if(p1.y > p2.y){ //if 1st and 2nd quadrants
+                endPoint = new Point(p2.x,  (p1.y - Math.abs(dx)));
+            }
+            else{
+                endPoint = new Point(p2.x,  (p1.y + Math.abs(dx)));
+            }
+
         }
         else if(k >= 2.41){
             //vertical

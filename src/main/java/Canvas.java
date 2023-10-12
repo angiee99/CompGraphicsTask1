@@ -177,7 +177,7 @@ public class Canvas {
 
     public void start() {
 //        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test dashed line
-        liner.drawStrictLine(img, new Point(200, 400), new Point(500, 50), 0xff0000);
+//        liner.drawStrictLine(img, new Point(400, 300), new Point(250, 400), 0xff0000);
         panel.repaint();
     }
 
