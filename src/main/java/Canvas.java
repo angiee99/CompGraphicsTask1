@@ -36,6 +36,8 @@ public class Canvas {
     private LinerDashed dashedLiner;
     private PolygonerTrivial polygoner;
 
+    private boolean withShift;
+
     //struktury
     private ArrayList<Line> lineList;
     public Canvas(int width, int height) {
@@ -53,6 +55,9 @@ public class Canvas {
 
         lineList = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
+        withShift = false;
+
+
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
 
@@ -80,7 +85,7 @@ public class Canvas {
                     lineList.clear();
 
                     img.present(panel.getGraphics());
-                    //TODO add deletion of all data structures (Points, Lines, Polygones)
+                    //TODO add deletion of all data structures (Points, Lines(done), Polygones)
                 }
             }
         });
@@ -91,17 +96,35 @@ public class Canvas {
                 img.present(panel.getGraphics());
             }
         });
+
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                panel.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                       if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                           withShift = true;
+                       }
+                    }
+                });
                 if(anchorPoint.x == -1 && anchorPoint.y== -1){
                     anchorPoint.x = e.getX();
                     anchorPoint.y = e.getY();
                 }
                 else if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
-                    img.present(panel.getGraphics());
-                    liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
+                    if(withShift){
+                        liner.drawStrictLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                                                        //mb here with shift as an argument
+                                                        // or make it an atribute of liner, so we can set it and yep
+                        img.present(panel.getGraphics());
+                        liner.drawStrictLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f);
+                    }
+                    else{
+                        liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                        img.present(panel.getGraphics());
+                        liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
+                    }
                 }
             }
         });
@@ -110,9 +133,14 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    Line current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
-//                    liner.drawLine(img, current);
-                    //
+                    Line current;
+                    if(withShift){
+                        current = liner.getStrictLine(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                    }
+                    else{
+                       current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                    }
+
                     lineList.add(current);
                     for (Line line: lineList) {
                         liner.drawLine(img, line);
@@ -120,9 +148,7 @@ public class Canvas {
                     img.present(panel.getGraphics());
 
                     resetAnchorPoint();
-                   // add a Line to line collection
                 }
-
             }
         });
     }
@@ -145,6 +171,7 @@ public class Canvas {
 
     public void start() {
 //        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test dashed line
+        liner.drawStrictLine(img, new Point(200, 400), new Point(300, 50), 0xff0000);
         panel.repaint();
     }
 
