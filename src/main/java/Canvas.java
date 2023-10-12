@@ -103,9 +103,15 @@ public class Canvas {
                 panel.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                       if(e.getKeyCode() == KeyEvent.VK_SHIFT){
-                           withShift = true;
-                       }
+                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                            withShift = true;
+                        }
+                    }
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                            withShift = false;
+                        }
                     }
                 });
                 if(anchorPoint.x == -1 && anchorPoint.y== -1){
@@ -171,7 +177,7 @@ public class Canvas {
 
     public void start() {
 //        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test dashed line
-        liner.drawStrictLine(img, new Point(200, 400), new Point(300, 50), 0xff0000);
+        liner.drawStrictLine(img, new Point(200, 400), new Point(500, 50), 0xff0000);
         panel.repaint();
     }
 
