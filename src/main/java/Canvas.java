@@ -127,9 +127,9 @@ public class Canvas {
                         liner.drawStrictLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f);
                     }
                     else{
-                        liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
+                        dashedLiner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
                         img.present(panel.getGraphics());
-                        liner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
+                        dashedLiner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
                     }
                 }
             }

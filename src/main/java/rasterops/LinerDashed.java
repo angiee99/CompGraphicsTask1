@@ -7,7 +7,9 @@ import rasterization.Raster;
 public class LinerDashed implements Liner{
     @Override
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color) {
-        int step = 0;
+        int step = 10;
+        boolean draw = false;
+
         if(Math.abs(y2 - y1) < Math.abs(x2 - x1)){// y = x
             if(x1 > x2){//swap
                 double temp = x1;
@@ -23,16 +25,14 @@ public class LinerDashed implements Liner{
             double y = y1;
 
             do{
-                rastr.setColor(color, x, (int)Math.round(y));
-                if(step == 5) {
-                    x += step;
-                    step = 0;
-                }
-                else{
+                draw = (draw == false) ? true: false;
+                for (int i = 0; i < step; i++) {
+                    if(draw){
+                        rastr.setColor(color, x, (int)Math.round(y));
+                    }
                     x += 1;
+                    y += k;
                 }
-                y += k;
-                step += 1;
             } while (x <= x2);
         }
         else{ // ridici osa x
@@ -48,16 +48,14 @@ public class LinerDashed implements Liner{
             double x = x1;
             int y = (int)Math.round(y1);
             do{
-                rastr.setColor(color, (int)Math.round(x), y);
-                x += 1/k;
-                if(step == 5){
-                    y += step;
-                    step = 0;
+                draw = (draw == false) ? true: false;
+                for (int i = 0; i < step; i++) {
+                    if(draw){
+                        rastr.setColor(color, (int)Math.round(x), y);
+                    }
+                    x += 1/k;
+                    y += 1;
                 }
-               else{
-                   y += 1;
-               }
-               step +=1;
             } while (y <= y2);
         }
     }
