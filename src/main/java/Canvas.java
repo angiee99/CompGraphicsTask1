@@ -2,6 +2,7 @@ import model.Line;
 import model.Point;
 import rasterization.RasterBI;
 import rasterops.LinerDashed;
+import rasterops.LinerStrict;
 import rasterops.LinerTrivial;
 import rasterops.PolygonerTrivial;
 
@@ -120,16 +121,10 @@ public class Canvas {
                 }
                 else if(anchorPoint.x != -1 && anchorPoint.y!= -1){
                     if(withShift){
-                        liner.drawStrictLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
-                                                        //mb here with shift as an argument
-                                                        // or make it an atribute of liner, so we can set it and yep
-                        img.present(panel.getGraphics());
-                        liner.drawStrictLine(img, anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f);
+                        predrawStrictLine(anchorPoint,  new Point(e.getX(), e.getY()));
                     }
                     else{
-                        dashedLiner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000));
-                        img.present(panel.getGraphics());
-                        dashedLiner.drawLine(img, new Line(anchorPoint, new Point(e.getX(), e.getY()), 0x2f2f2f));
+                        predrawLine(anchorPoint,  new Point(e.getX(), e.getY()));
                     }
                 }
             }
@@ -141,7 +136,8 @@ public class Canvas {
                 if(anchorPoint.x != -1 && anchorPoint.y!= -1){
                     Line current;
                     if(withShift){
-                        current = liner.getStrictLine(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                        current = new LinerStrict()
+                                .getStrictLine(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                     }
                     else{
                        current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
@@ -152,12 +148,24 @@ public class Canvas {
                         liner.drawLine(img, line);
                     }
                     img.present(panel.getGraphics());
-
                     resetAnchorPoint();
                 }
             }
         });
     }
+
+    private void predrawLine(Point p1, Point p2){
+        dashedLiner.drawLine(img, new Line(p1, p2, 0xff0000));
+        img.present(panel.getGraphics());
+        dashedLiner.drawLine(img, new Line(p1, p2, 0x2f2f2f));
+    }
+    private void predrawStrictLine(Point p1, Point p2){
+        LinerStrict strictLiner = new LinerStrict();
+        strictLiner.drawStrictLine(img, p1, p2, 0xff0000);
+        img.present(panel.getGraphics());
+        strictLiner.drawStrictLine(img, p1, p2, 0x2f2f2f);
+    }
+
     private void resetAnchorPoint(){
         anchorPoint.x = -1;
         anchorPoint.y = -1;
