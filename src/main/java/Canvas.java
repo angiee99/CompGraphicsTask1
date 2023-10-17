@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-
 /**
  * trida pro kresleni na platno: zobrazeni pixelu
  *
@@ -134,6 +133,26 @@ public class Canvas {
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                panel.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                            withShift = true;
+                        }
+                    }
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                            withShift = false;
+                        }
+                        if(e.getKeyCode() == KeyEvent.VK_UP){
+                            stepChange = 1;
+                        }
+                        else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                            stepChange = -1;
+                        }
+                    }
+                });
                 if(anchorPoint.x == -1 && anchorPoint.y== -1){
                     anchorPoint.x = e.getX();
                     anchorPoint.y = e.getY();
