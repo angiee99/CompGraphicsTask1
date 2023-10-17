@@ -49,7 +49,7 @@ public class Canvas {
         img = new RasterBI(width, height);
         liner = new LinerTrivial();
         dashedLiner = new LinerDashed();
-        polygoner = new PolygonerTrivial(0x008000, 0x2f2f2f);
+        polygoner = new PolygonerTrivial(img, 0x008000, 0x2f2f2f);
 
         lineList = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
@@ -91,18 +91,36 @@ public class Canvas {
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT){
                     withShift = true;
                 }
+
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    //deletes the last added vertex
+                    polygoner.deleteVertex(polygoner.getPolygon().getLastAddedVert());
+                    img.present(panel.getGraphics());
+//                    panel.addMouseListener(new MouseAdapter() {
+//                        @Override
+//                        public void mousePressed(MouseEvent e) {
+//                            Point curr = new Point(e.getX(), e.getY());
+//                            if(polygoner.isPolVertex(curr)){
+//                                polygoner.deleteVertex(curr);
+//                            }
+//                        }
+//                    });
+                }
             }
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT){
                     withShift = false;
                 }
+
                 if(e.getKeyCode() == KeyEvent.VK_UP){
                     stepChange = 1;
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_DOWN){
                     stepChange = -1;
                 }
+
+
             }
         });
         panel.addMouseListener(new MouseAdapter() {
@@ -195,8 +213,6 @@ public class Canvas {
     }
 
     public void start() {
-//        dashedLiner.drawLine(img,300, 400, 600, 200, 0xff0000); //test dashed line
-//        liner.drawStrictLine(img, new Point(400, 300), new Point(250, 400), 0xff0000);
         panel.repaint();
     }
 

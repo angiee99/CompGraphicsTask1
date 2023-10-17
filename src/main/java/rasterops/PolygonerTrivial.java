@@ -3,15 +3,20 @@ package rasterops;
 import model.Point;
 import model.Polygon;
 import rasterization.Raster;
+import rasterization.RasterBI;
+
+import java.util.Optional;
 
 public class PolygonerTrivial implements Polygoner{
     private Polygon polygon;
     private Liner liner;
     private int color;
     private int bgcolor;
-    public PolygonerTrivial(int color, int bgcolor){
+    private Raster raster;
+    public PolygonerTrivial(Raster raster, int color, int bgcolor){
         polygon = new Polygon();
         liner = new LinerTrivial();
+        this.raster = raster;
         this.color = color;
         this.bgcolor = bgcolor;
     }
@@ -56,8 +61,32 @@ public class PolygonerTrivial implements Polygoner{
             polygon.addVertex(p);
         }
     }
+
+    public boolean isPolVertex(Point p){
+        return polygon.isVertex(p);
+    }
+
+    public void deleteVertex(Point p){
+        System.out.println("delete Vertx invoked");
+        Point prev1, prev2;
+        int pIndex = polygon.getVertexIndex(p).get(); // may make trouble
+
+        if(pIndex > 0){
+            prev1 = polygon.getVertByPosition(pIndex-1);
+            drawEdge(this.raster, prev1, p, this.bgcolor);
+
+            if(pIndex > 1){
+                prev2 = polygon.getVertByPosition(pIndex-2);
+                drawEdge(this.raster, prev2, p, this.bgcolor);
+
+                drawEdge(this.raster, prev1, prev2, this.color);
+            }
+        }
+
+        polygon.removeVertex(p);
+    }
+
     private void addFirstVertex(Point p){
         polygon.addVertex(p);
     }
-
 }
