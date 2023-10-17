@@ -7,19 +7,14 @@ import rasterops.LinerTrivial;
 import rasterops.PolygonerTrivial;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.*;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.round;
 
-/// now with RasterBI as it implements our Rastr Interface
 /**
  * trida pro kresleni na platno: zobrazeni pixelu
  *
@@ -38,6 +33,8 @@ public class Canvas {
     private PolygonerTrivial polygoner;
 
     private boolean withShift;
+    private int dashedLineStep;
+    private int stepChange;
 
     //struktury
     private ArrayList<Line> lineList;
@@ -56,8 +53,10 @@ public class Canvas {
 
         lineList = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
-        withShift = false;
 
+        withShift = false;
+        dashedLineStep = 10;
+        stepChange = 0;
 
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -88,11 +87,27 @@ public class Canvas {
                     img.present(panel.getGraphics());
                     //TODO add deletion of all data structures (Points, Lines(done), Polygones)
                 }
+
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                    withShift = true;
+                }
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                    withShift = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_UP){
+                    stepChange = 1;
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                    stepChange = -1;
+                }
             }
         });
         panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) { // for polygon //TODO later
+            public void mouseClicked(MouseEvent e) { // for polygon
                 polygoner.addVertex(img, new Point(e.getX(), e.getY()));
                 img.present(panel.getGraphics());
             }
@@ -101,20 +116,6 @@ public class Canvas {
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                panel.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
-                            withShift = true;
-                        }
-                    }
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
-                            withShift = false;
-                        }
-                    }
-                });
                 if(anchorPoint.x == -1 && anchorPoint.y== -1){
                     anchorPoint.x = e.getX();
                     anchorPoint.y = e.getY();
@@ -142,7 +143,6 @@ public class Canvas {
                     else{
                        current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                     }
-
                     lineList.add(current);
                     for (Line line: lineList) {
                         liner.drawLine(img, line);
@@ -155,9 +155,19 @@ public class Canvas {
     }
 
     private void predrawLine(Point p1, Point p2){
-        dashedLiner.drawLine(img, new Line(p1, p2, 0xff0000));
+        if(stepChange == -1){
+            dashedLineStep -= 2;
+        }
+        else if (stepChange == 1){
+            dashedLineStep += 2;
+        }
+        if(dashedLineStep < 1){
+            resetDashedLineStep();
+        }
+        stepChange = 0;
+        dashedLiner.drawLine(img, new Line(p1, p2, 0xff0000), dashedLineStep);
         img.present(panel.getGraphics());
-        dashedLiner.drawLine(img, new Line(p1, p2, 0x2f2f2f));
+        dashedLiner.drawLine(img, new Line(p1, p2, 0x2f2f2f), dashedLineStep);
     }
     private void predrawStrictLine(Point p1, Point p2){
         LinerStrict strictLiner = new LinerStrict();
@@ -171,16 +181,17 @@ public class Canvas {
         anchorPoint.y = -1;
     }
 
+    private void resetDashedLineStep(){
+        dashedLineStep = 10;
+        stepChange = 0;
+    }
+
     public void clear() {
         img.clear(0x2f2f2f);
     }
 
     public void present(Graphics graphics) {
         img.present(graphics);
-    }
-
-    public void draw(int x, int y, int rgb ) {
-        img.setColor(rgb, x, y);
     }
 
     public void start() {
