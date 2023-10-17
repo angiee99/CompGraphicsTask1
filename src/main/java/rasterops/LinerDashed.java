@@ -5,9 +5,7 @@ import model.Point;
 import rasterization.Raster;
 
 public class LinerDashed implements Liner{
-    @Override
-    public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color) {
-        int step = 10;
+    public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color, int step){
         boolean draw = false;
 
         if(Math.abs(y2 - y1) < Math.abs(x2 - x1)){// y = x
@@ -59,11 +57,24 @@ public class LinerDashed implements Liner{
             } while (y <= y2);
         }
     }
+
+    @Override
+    public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color) {
+        int step = 10;
+        drawLine(rastr, x1, y1, x2, y2, color, 10); // default step = 10
+    }
     public void drawLine(Raster rastr, Point p1, Point p2, int color){
         drawLine(rastr, p1.x, p1.y, p2.x, p2.y, color);
     }
+
+    public void drawLine(Raster rastr, Point p1, Point p2, int color, int step){
+        drawLine(rastr, p1.x, p1.y, p2.x, p2.y, color, step);
+    }
     public void drawLine(Raster rastr, Line line){
         drawLine(rastr, line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor());
+    }
+    public void drawLine(Raster rastr, Line line, int step){
+        drawLine(rastr, line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor(), step);
     }
 
 }
