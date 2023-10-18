@@ -21,6 +21,11 @@ public class PolygonerTrivial implements Polygoner{
         this.bgcolor = bgcolor;
     }
 
+    public void resetPolygon(){
+        polygon.clear();
+    }
+
+
     public Polygon getPolygon(){
         return this.polygon;
     }
@@ -42,14 +47,10 @@ public class PolygonerTrivial implements Polygoner{
     public void addVertex(Raster raster, Point p) {
         int vertexCount = polygon.getVertexCount();
         System.out.println(polygon.getVertexCount());
-        if (vertexCount == 0){
-            addFirstVertex(p);
-        }
-        else if(vertexCount == 1){
+        if(vertexCount == 1){
             drawEdge(raster, p, polygon.getLastAddedVert(), this.color);
-            polygon.addVertex(p);
         }
-        else{
+        else if(vertexCount > 1){
             Point prev = polygon.getVertByPosition(polygon.getVertexCount() - 2);
             if(vertexCount > 2) {
                 drawEdge(raster, polygon.getLastAddedVert(), prev, this.bgcolor);
@@ -57,17 +58,51 @@ public class PolygonerTrivial implements Polygoner{
 
             drawEdge(raster, p, polygon.getLastAddedVert(), this.color);
             drawEdge(raster, p, prev, this.color);
-
-            polygon.addVertex(p);
         }
+        polygon.addVertex(p);
     }
 
-    public boolean isPolVertex(Point p){
-        return polygon.isVertex(p);
+    public Optional<Point> isPolVertex(Point p){
+        for (int i = 0; i < polygon.getVertexCount(); i++) {
+            Point curr = polygon.getVertex(i);
+//            System.out.println("coord = " + curr.x + " "+ curr.y);
+            if(isCloseEnough(p,curr)){
+                return Optional.of(curr);
+            }
+        }
+        return  Optional.empty();
+    }
+    private boolean isCloseEnough(Point p1, Point p2){
+        double minDistance = 10;
+        double distance = Math.sqrt(Math.abs((p2.x - p1.x)^2) + Math.abs((p2.y - p1.y)^2));
+//        System.out.println("distance = "+ distance);
+        return distance <= minDistance;
     }
 
     public void deleteVertex(Point p){
-        System.out.println("delete Vertx invoked");
+        int pIndex = polygon.getVertexIndex(p).get();
+        if(pIndex == polygon.getVertexCount()-1 ){
+            deleteLastVertex(p);
+        }
+        else{
+            System.out.println("To be coded!");
+        }
+        //        else if(pIndex == 0){
+//            if(polygon.getVertexCount() > 1){
+//                drawEdge(this.raster, polygon.getVertex(pIndex + 1), p, this.bgcolor);
+//            }
+//            if(polygon.getVertexCount() > 2){
+//                drawEdge(this.raster, polygon.getVertex(pIndex + 2), p, this.bgcolor);
+//                drawEdge(this.raster, polygon.getVertex(pIndex + 2),
+//                        polygon.getVertex(pIndex + 1), this.color);
+//            }
+//            polygon.removeVertex(p);
+//
+//        }
+    }
+
+    public void deleteLastVertex(Point p){
+
         Point prev1, prev2;
         int pIndex = polygon.getVertexIndex(p).get(); // may make trouble
 
@@ -81,12 +116,9 @@ public class PolygonerTrivial implements Polygoner{
 
                 drawEdge(this.raster, prev1, prev2, this.color);
             }
+
+            polygon.removeVertex(p);
         }
-
-        polygon.removeVertex(p);
     }
 
-    private void addFirstVertex(Point p){
-        polygon.addVertex(p);
-    }
 }

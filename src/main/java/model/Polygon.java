@@ -18,21 +18,17 @@ public class Polygon {
         vertices.remove(vertex);
     }
 
-//    public Optional<Point> getFisrtVertex(){
-//        if(vertices.size() > 0)
-//            return Optional.of(vertices.get(0));
-//        return Optional.empty();
-//
-//    }
-
-//    public Optional<Point> getLastAddedVert(){
-//        if(vertices.size() > 0)
-//            return Optional.of(vertices.get(vertices.size() - 1));
-//        return Optional.empty();
-//    }
     public Point getFisrtVertex(){
         return vertices.get(0);
     }
+
+    public Point getVertex(int index){
+//        if(index < getVertexCount()){
+            return vertices.get(index);
+//        }
+//        else throw new IndexOutOfBoundsException();
+    }
+
     public Point getLastAddedVert(){
         return vertices.get(vertices.size() - 1);
     }
@@ -56,4 +52,9 @@ public class Polygon {
     public int getVertexCount(){
         return vertices.size();
     }
+
+    public void clear(){
+        vertices.clear();
+    }
+
 }

@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -32,6 +33,7 @@ public class Canvas {
     private PolygonerTrivial polygoner;
 
     private boolean withShift;
+    private boolean Dpressed;
     private int dashedLineStep;
     private int stepChange;
 
@@ -54,6 +56,7 @@ public class Canvas {
         anchorPoint = new Point(-1, -1);
 
         withShift = false;
+        Dpressed = false;
         dashedLineStep = 10;
         stepChange = 0;
 
@@ -82,7 +85,7 @@ public class Canvas {
                     img.clear(0x2f2f2f);
                     resetAnchorPoint();
                     lineList.clear();
-
+                    polygoner.resetPolygon();
                     img.present(panel.getGraphics());
                     //TODO add deletion of all data structures (Points, Lines(done), Polygones)
                 }
@@ -91,19 +94,27 @@ public class Canvas {
                     withShift = true;
                 }
 
-                if(e.getKeyCode() == KeyEvent.VK_D){
-                    //deletes the last added vertex
-                    polygoner.deleteVertex(polygoner.getPolygon().getLastAddedVert());
+                //delete last added vertex
+                if(e.getKeyCode() == KeyEvent.VK_L){
+                    polygoner.deleteLastVertex(polygoner.getPolygon().getLastAddedVert());
                     img.present(panel.getGraphics());
-//                    panel.addMouseListener(new MouseAdapter() {
-//                        @Override
-//                        public void mousePressed(MouseEvent e) {
-//                            Point curr = new Point(e.getX(), e.getY());
-//                            if(polygoner.isPolVertex(curr)){
-//                                polygoner.deleteVertex(curr);
-//                            }
-//                        }
-//                    });
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    Dpressed = true;
+                    panel.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mousePressed(MouseEvent e) {
+                            if(Dpressed){
+                                Point curr = new Point(e.getX(), e.getY());
+                                Optional<Point> closestPoint = polygoner.isPolVertex(curr);
+                                if(!closestPoint.isEmpty()){
+                                    polygoner.deleteVertex(closestPoint.get());
+                                }
+                            }
+                        }
+                    });
+                    img.present(panel.getGraphics());
                 }
             }
             @Override
@@ -119,14 +130,20 @@ public class Canvas {
                     stepChange = -1;
                 }
 
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    Dpressed = false;
+                }
+
 
             }
         });
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
-                polygoner.addVertex(img, new Point(e.getX(), e.getY()));
-                img.present(panel.getGraphics());
+                if(!Dpressed){
+                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
+                    img.present(panel.getGraphics());
+                }
             }
         });
 
