@@ -28,10 +28,7 @@ public class Polygon {
     }
 
     public Point getVertex(int index){
-//        if(index < getVertexCount()){
             return vertices.get(index);
-//        }
-//        else throw new IndexOutOfBoundsException();
     }
 
     public Point getLastAddedVert(){

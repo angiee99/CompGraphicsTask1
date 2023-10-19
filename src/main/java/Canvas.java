@@ -87,17 +87,11 @@ public class Canvas {
                     lineList.clear();
                     polygoner.resetPolygon();
                     img.present(panel.getGraphics());
-                    //TODO add deletion of all data structures (Points, Lines(done), Polygones)
+                    //TODO add deletion of all data structures (Points, Lines(done), Polygones(done))
                 }
 
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT){
                     withShift = true;
-                }
-
-                //delete last added vertex
-                if(e.getKeyCode() == KeyEvent.VK_L){
-                    polygoner.deleteLastVertex(polygoner.getPolygon().getLastAddedVert());
-                    img.present(panel.getGraphics());
                 }
 
                 if(e.getKeyCode() == KeyEvent.VK_D){
@@ -134,15 +128,13 @@ public class Canvas {
                     Dpressed = false;
                 }
 
-
             }
         });
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
                 if(!Dpressed){
-//                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
-                    polygoner.addVertexToClosestEdge(img, new Point(e.getX(), e.getY()));
+                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
                     img.present(panel.getGraphics());
                 }
             }

@@ -47,5 +47,4 @@ public class Line {
     public int getColor() {
         return color;
     }
-    //TODO
 }
