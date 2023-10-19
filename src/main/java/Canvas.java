@@ -141,7 +141,8 @@ public class Canvas {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
                 if(!Dpressed){
-                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
+//                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
+                    polygoner.addVertexToClosestEdge(img, new Point(e.getX(), e.getY()));
                     img.present(panel.getGraphics());
                 }
             }

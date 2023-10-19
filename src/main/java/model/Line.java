@@ -20,6 +20,14 @@ public class Line {
         this.color = color;
     }
 
+    public Point getP1(){
+        return new Point(x1, y1);
+    }
+
+    public Point getP2(){
+        return new Point(x2, y2);
+    }
+
     public int getX1() {
         return x1;
     }

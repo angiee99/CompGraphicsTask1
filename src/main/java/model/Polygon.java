@@ -14,6 +14,11 @@ public class Polygon {
     public void addVertex(Point newVert){
         vertices.add(newVert);
     }
+
+    public void addVertexInBetween(Point newVert, int index){
+        vertices.add(index, newVert);
+    }
+
     public void removeVertex(Point vertex){
         vertices.remove(vertex);
     }
@@ -46,7 +51,7 @@ public class Polygon {
     }
 
     public boolean isVertex(Point p){
-        return vertices.contains(p);
+        return vertices.contains(p); // returns false because it is another object
     }
 
     public int getVertexCount(){
