@@ -95,19 +95,27 @@ public class Canvas {
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     Dpressed = true;
+
                     panel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mousePressed(MouseEvent e) {
-                            if (Dpressed) {
+                        Runnable deleteVertex = new Runnable() {
+                            @Override
+                            public void run() {
                                 Point curr = new Point(e.getX(), e.getY());
                                 Optional<Point> closestPoint = polygoner.isPolVertex(curr);
                                 if (!closestPoint.isEmpty()) {
                                     polygoner.deleteVertex(closestPoint.get());
                                 }
                             }
+                        };
+                        if (Dpressed) {
+                            change(deleteVertex);
+                        }
                         }
                     });
-                    img.present(panel.getGraphics());
+
+//                    img.present(panel.getGraphics());
                 }
             }
 
@@ -141,8 +149,14 @@ public class Canvas {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
                 if (!Dpressed) {
-                    polygoner.addVertex(img, new Point(e.getX(), e.getY()));
-                    img.present(panel.getGraphics());
+                    Runnable newVertex = new Runnable() {
+                        @Override
+                        public void run() {
+                            polygoner.addVertex(img, new Point(e.getX(), e.getY()));
+                        }
+                    };
+                    change(newVertex);
+//                    img.present(panel.getGraphics());
                 }
             }
         });
@@ -157,7 +171,6 @@ public class Canvas {
                             withShift = true;
                         }
                     }
-
                     @Override
                     public void keyReleased(KeyEvent e) {
                         if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
