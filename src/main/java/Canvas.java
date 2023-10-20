@@ -39,6 +39,9 @@ public class Canvas {
 
     //struktury
     private ArrayList<Line> lineList;
+
+    private ArrayList<Line> previewLine;
+
     public Canvas(int width, int height) {
         frame = new JFrame();
 
@@ -53,6 +56,7 @@ public class Canvas {
         polygoner = new PolygonerTrivial(img, 0x008000, 0x2f2f2f);
 
         lineList = new ArrayList<Line>();
+        previewLine = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
 
         withShift = false;
@@ -81,28 +85,23 @@ public class Canvas {
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_C){
-                    img.clear(0x2f2f2f);
-                    resetAnchorPoint();
-                    lineList.clear();
-                    polygoner.resetPolygon();
-                    img.present(panel.getGraphics());
-                    //TODO add deletion of all data structures (Points, Lines(done), Polygones(done))
+                if (e.getKeyCode() == KeyEvent.VK_C) {
+                    clearCanvas();
                 }
 
-                if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     withShift = true;
                 }
 
-                if(e.getKeyCode() == KeyEvent.VK_D){
+                if (e.getKeyCode() == KeyEvent.VK_D) {
                     Dpressed = true;
                     panel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mousePressed(MouseEvent e) {
-                            if(Dpressed){
+                            if (Dpressed) {
                                 Point curr = new Point(e.getX(), e.getY());
                                 Optional<Point> closestPoint = polygoner.isPolVertex(curr);
-                                if(!closestPoint.isEmpty()){
+                                if (!closestPoint.isEmpty()) {
                                     polygoner.deleteVertex(closestPoint.get());
                                 }
                             }
@@ -111,20 +110,28 @@ public class Canvas {
                     img.present(panel.getGraphics());
                 }
             }
+
+            public void clearCanvas() {
+                img.clear(0x2f2f2f);
+                resetAnchorPoint();
+                lineList.clear();
+                polygoner.resetPolygon();
+                img.present(panel.getGraphics());
+            }
+
             @Override
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     withShift = false;
                 }
 
-                if(e.getKeyCode() == KeyEvent.VK_UP){
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
                     stepChange = 1;
-                }
-                else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     stepChange = -1;
                 }
 
-                if(e.getKeyCode() == KeyEvent.VK_D){
+                if (e.getKeyCode() == KeyEvent.VK_D) {
                     Dpressed = false;
                 }
 
@@ -133,7 +140,7 @@ public class Canvas {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
-                if(!Dpressed){
+                if (!Dpressed) {
                     polygoner.addVertex(img, new Point(e.getX(), e.getY()));
                     img.present(panel.getGraphics());
                 }
@@ -146,52 +153,55 @@ public class Canvas {
                 panel.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                             withShift = true;
                         }
                     }
+
                     @Override
                     public void keyReleased(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+                        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                             withShift = false;
                         }
-                        if(e.getKeyCode() == KeyEvent.VK_UP){
+                        if (e.getKeyCode() == KeyEvent.VK_UP) {
                             stepChange = 1;
-                        }
-                        else if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                             stepChange = -1;
                         }
                     }
                 });
-                if(anchorPoint.x == -1 && anchorPoint.y== -1){
-                    anchorPoint.x = e.getX();
-                    anchorPoint.y = e.getY();
-                }
-                else if(anchorPoint.x != -1 && anchorPoint.y!= -1){
-                    if(withShift){
-                        predrawStrictLine(anchorPoint,  new Point(e.getX(), e.getY()));
+                Runnable newPreviewLine = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (anchorPoint.x == -1 && anchorPoint.y == -1) {
+                            anchorPoint.x = e.getX();
+                            anchorPoint.y = e.getY();
+                        } else if (anchorPoint.x != -1 && anchorPoint.y != -1) {
+                            if (withShift) {
+                                predrawStrictLine(anchorPoint, new Point(e.getX(), e.getY()));
+                            } else {
+                                predrawLine(anchorPoint, new Point(e.getX(), e.getY()));
+                            }
+                        }
                     }
-                    else{
-                        predrawLine(anchorPoint,  new Point(e.getX(), e.getY()));
-                    }
-                }
+                };
+                change(newPreviewLine);
             }
         });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(anchorPoint.x != -1 && anchorPoint.y!= -1){
+                if (anchorPoint.x != -1 && anchorPoint.y != -1) {
                     Line current;
-                    if(withShift){
+                    if (withShift) {
                         current = new LinerStrict()
                                 .getStrictLine(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
-                    }
-                    else{
-                       current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
+                    } else {
+                        current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                     }
                     lineList.add(current);
-                    for (Line line: lineList) {
+                    for (Line line : lineList) {
                         liner.drawLine(img, line);
                     }
                     img.present(panel.getGraphics());
@@ -201,34 +211,57 @@ public class Canvas {
         });
     }
 
-    private void predrawLine(Point p1, Point p2){
-        if(stepChange == -1){
-            dashedLineStep -= 2;
+    public void draw(){
+        for (Line line: lineList
+             ) {
+            liner.drawLine(img, line);
         }
-        else if (stepChange == 1){
+        for (Line dLine: previewLine
+             ) {
+            dashedLiner.drawLine(img, dLine, dashedLineStep);
+        }
+
+        polygoner.drawPolygon();
+
+        img.present(panel.getGraphics());
+    }
+
+    private void predrawLine(Point p1, Point p2) {
+        if (stepChange == -1) {
+            dashedLineStep -= 2;
+        } else if (stepChange == 1) {
             dashedLineStep += 2;
         }
-        if(dashedLineStep < 1){
+        if (dashedLineStep < 1) {
             resetDashedLineStep();
         }
         stepChange = 0;
         dashedLiner.drawLine(img, new Line(p1, p2, 0xff0000), dashedLineStep);
+
+        if(previewLine.size() == 0){
+            previewLine.add(new Line(p1, p2, 0xff0000));
+        }
+        else{
+            previewLine.clear();
+            previewLine.add(new Line(p1, p2, 0xff0000));
+        }
         img.present(panel.getGraphics());
         dashedLiner.drawLine(img, new Line(p1, p2, 0x2f2f2f), dashedLineStep);
     }
-    private void predrawStrictLine(Point p1, Point p2){
+
+    private void predrawStrictLine(Point p1, Point p2) {
         LinerStrict strictLiner = new LinerStrict();
         strictLiner.drawStrictLine(img, p1, p2, 0xff0000);
         img.present(panel.getGraphics());
         strictLiner.drawStrictLine(img, p1, p2, 0x2f2f2f);
     }
 
-    private void resetAnchorPoint(){
+    private void resetAnchorPoint() {
         anchorPoint.x = -1;
         anchorPoint.y = -1;
     }
 
-    private void resetDashedLineStep(){
+    private void resetDashedLineStep() {
         dashedLineStep = 10;
         stepChange = 0;
     }
@@ -244,6 +277,16 @@ public class Canvas {
     public void start() {
         panel.repaint();
     }
+
+    public void change(Runnable update){
+        clear();
+        update.run();
+        draw();
+//            interface runnable
+    }
+    Runnable test = () -> {
+
+    };
 
     public static void main(String[] args) {
 

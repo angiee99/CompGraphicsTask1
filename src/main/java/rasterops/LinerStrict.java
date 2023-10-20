@@ -55,8 +55,8 @@ public class LinerStrict extends LinerTrivial{
 
         Line strictLine = new Line(p1, endPoint, color);
 
-        System.out.println("Starting point: " + p1.x + " " + p1.y + " : " + p2.x + " " + p2.y);
-        System.out.println(p1.x + " " + p1.y + " : " + endPoint.x + " " + endPoint.y);
+//        System.out.println("Starting point: " + p1.x + " " + p1.y + " : " + p2.x + " " + p2.y);
+//        System.out.println(p1.x + " " + p1.y + " : " + endPoint.x + " " + endPoint.y);
         return strictLine;
     }
 

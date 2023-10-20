@@ -21,6 +21,16 @@ public class PolygonerTrivial implements Polygoner{
         this.color = color;
         this.bgcolor = bgcolor;
     }
+    public void drawPolygon(){
+        for (int i = 0; i < polygon.getVertexCount() -1; i++) {
+            drawEdge(this.raster, polygon.getVertex(i), polygon.getVertex(i+1), this.color);
+        }
+        if(polygon.getVertexCount() > 2){
+            drawEdge(this.raster, polygon.getVertex(polygon.getVertexCount() -1),
+                    polygon.getVertex(0), this.color);
+        }
+
+    }
 
     public void resetPolygon(){
         polygon.clear();
