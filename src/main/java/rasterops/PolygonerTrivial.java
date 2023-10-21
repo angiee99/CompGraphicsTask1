@@ -1,10 +1,8 @@
 package rasterops;
 
-import model.Line;
 import model.Point;
 import model.Polygon;
 import rasterization.Raster;
-import rasterization.RasterBI;
 
 import java.util.Optional;
 
@@ -16,7 +14,7 @@ public class PolygonerTrivial implements Polygoner{
     private Raster raster;
     public PolygonerTrivial(Raster raster, int color, int bgcolor){
         polygon = new Polygon();
-        liner = new LinerTrivial();
+        liner = new LinerDDAII();
         this.raster = raster;
         this.color = color;
         this.bgcolor = bgcolor;

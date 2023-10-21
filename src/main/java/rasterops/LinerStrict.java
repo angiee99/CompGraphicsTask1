@@ -4,7 +4,7 @@ import model.Line;
 import model.Point;
 import rasterization.Raster;
 
-public class LinerStrict extends LinerTrivial{
+public class LinerStrict extends LinerDDAII {
     public void drawStrictLine(Raster rastr, Point p1, Point p2, int color){
         Line lineTodraw = getStrictLine(p1, p2, color);
         drawLine(rastr, lineTodraw);

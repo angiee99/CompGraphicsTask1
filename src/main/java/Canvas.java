@@ -3,7 +3,7 @@ import model.Point;
 import rasterization.RasterBI;
 import rasterops.LinerDashed;
 import rasterops.LinerStrict;
-import rasterops.LinerTrivial;
+import rasterops.LinerDDAII;
 import rasterops.PolygonerTrivial;
 
 import java.awt.BorderLayout;
@@ -28,7 +28,7 @@ public class Canvas {
     private JPanel panel;
     private RasterBI img;
     private Point anchorPoint;
-    private LinerTrivial liner;
+    private LinerDDAII liner;
     private LinerDashed dashedLiner;
     private PolygonerTrivial polygoner;
 
@@ -51,7 +51,7 @@ public class Canvas {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         img = new RasterBI(width, height);
-        liner = new LinerTrivial();
+        liner = new LinerDDAII();
         dashedLiner = new LinerDashed();
         polygoner = new PolygonerTrivial(img, 0x008000, 0x2f2f2f);
 
@@ -99,14 +99,11 @@ public class Canvas {
                     panel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mousePressed(MouseEvent e) {
-                        Runnable deleteVertex = new Runnable() {
-                            @Override
-                            public void run() {
-                                Point curr = new Point(e.getX(), e.getY());
-                                Optional<Point> closestPoint = polygoner.isPolVertex(curr);
-                                if (!closestPoint.isEmpty()) {
-                                    polygoner.deleteVertex(closestPoint.get());
-                                }
+                        Runnable deleteVertex = () -> {
+                            Point curr = new Point(e.getX(), e.getY());
+                            Optional<Point> closestPoint = polygoner.isPolVertex(curr);
+                            if (!closestPoint.isEmpty()) {
+                                polygoner.deleteVertex(closestPoint.get());
                             }
                         };
                         if (Dpressed) {
@@ -115,7 +112,6 @@ public class Canvas {
                         }
                     });
 
-//                    img.present(panel.getGraphics());
                 }
             }
 
@@ -149,14 +145,8 @@ public class Canvas {
             @Override
             public void mouseClicked(MouseEvent e) { // for polygon
                 if (!Dpressed) {
-                    Runnable newVertex = new Runnable() {
-                        @Override
-                        public void run() {
-                            polygoner.addVertex(img, new Point(e.getX(), e.getY()));
-                        }
-                    };
+                    Runnable newVertex = () -> polygoner.addVertex(img, new Point(e.getX(), e.getY()));
                     change(newVertex);
-//                    img.present(panel.getGraphics());
                 }
             }
         });
@@ -183,22 +173,19 @@ public class Canvas {
                         }
                     }
                 });
-                Runnable newPreviewLine = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (anchorPoint.x == -1 && anchorPoint.y == -1) {
-                            anchorPoint.x = e.getX();
-                            anchorPoint.y = e.getY();
-                        } else if (anchorPoint.x != -1 && anchorPoint.y != -1) {
-                            if (withShift) {
-                                predrawStrictLine(anchorPoint, new Point(e.getX(), e.getY()));
-                            } else {
-                                predrawLine(anchorPoint, new Point(e.getX(), e.getY()));
-                            }
+                Runnable mouseDragChange = () -> {
+                    if (anchorPoint.x == -1 && anchorPoint.y == -1) {
+                        anchorPoint.x = e.getX();
+                        anchorPoint.y = e.getY();
+                    } else if (anchorPoint.x != -1 && anchorPoint.y != -1) {
+                        if (withShift) {
+                            predrawStrictLine(anchorPoint, new Point(e.getX(), e.getY()));
+                        } else {
+                            predrawLine(anchorPoint, new Point(e.getX(), e.getY()));
                         }
                     }
                 };
-                change(newPreviewLine);
+                change(mouseDragChange);
             }
         });
 
@@ -213,11 +200,8 @@ public class Canvas {
                     } else {
                         current = new Line(anchorPoint, new Point(e.getX(), e.getY()), 0xff0000);
                     }
-                    lineList.add(current);
-                    for (Line line : lineList) {
-                        liner.drawLine(img, line);
-                    }
-                    img.present(panel.getGraphics());
+                    Runnable newLine = () -> { lineList.add(current); };
+                    change(newLine);
                     resetAnchorPoint();
                 }
             }
@@ -225,12 +209,11 @@ public class Canvas {
     }
 
     public void draw(){
-        for (Line line: lineList
-             ) {
+        for (Line line: lineList) {
             liner.drawLine(img, line);
         }
-        for (Line dLine: previewLine
-             ) {
+
+        for (Line dLine: previewLine) {
             dashedLiner.drawLine(img, dLine, dashedLineStep);
         }
 

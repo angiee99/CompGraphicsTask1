@@ -5,7 +5,7 @@ import model.Point;
 import rasterization.Raster;
 
 
-public class LinerTrivial implements Liner {
+public class LinerDDAII implements Liner {
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color){
         if(Math.abs(y2 - y1) < Math.abs(x2 - x1)){// osa y = x
             if(x1 > x2){//swap
