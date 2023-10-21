@@ -5,6 +5,16 @@ import model.Point;
 import rasterization.Raster;
 
 public class LinerDashed implements Liner{
+    /**
+     * Draws a dashed line with parametrised step
+     * @param rastr
+     * @param x1 Point 1 (x)
+     * @param y1 Point 1 (y)
+     * @param x2 Point 2 (x)
+     * @param y2 Point 2 (y)
+     * @param color
+     * @param step
+     */
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color, int step){
         boolean draw = false;
 
@@ -60,7 +70,6 @@ public class LinerDashed implements Liner{
 
     @Override
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color) {
-        int step = 10;
         drawLine(rastr, x1, y1, x2, y2, color, 10); // default step = 10
     }
     public void drawLine(Raster rastr, Point p1, Point p2, int color){

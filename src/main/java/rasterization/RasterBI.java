@@ -8,10 +8,6 @@ public class RasterBI implements Raster{
 
     private final BufferedImage img;
 
-    /*public RasterBI(BufferedImage img) {
-        this.img = img;
-    }*/
-
     public RasterBI(int width, int height) {
         this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }

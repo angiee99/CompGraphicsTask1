@@ -41,6 +41,7 @@ public class Canvas {
     private ArrayList<Line> lineList;
 
     private ArrayList<Line> previewLine;
+    private ArrayList<Line> previewStrictLine;
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -57,6 +58,7 @@ public class Canvas {
 
         lineList = new ArrayList<Line>();
         previewLine = new ArrayList<Line>();
+        previewStrictLine = new ArrayList<Line>();
         anchorPoint = new Point(-1, -1);
 
         withShift = false;
@@ -115,14 +117,6 @@ public class Canvas {
                 }
             }
 
-            public void clearCanvas() {
-                img.clear(0x2f2f2f);
-                resetAnchorPoint();
-                lineList.clear();
-                polygoner.resetPolygon();
-                img.present(panel.getGraphics());
-            }
-
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
@@ -141,38 +135,10 @@ public class Canvas {
 
             }
         });
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) { // for polygon
-                if (!Dpressed) {
-                    Runnable newVertex = () -> polygoner.addVertex(img, new Point(e.getX(), e.getY()));
-                    change(newVertex);
-                }
-            }
-        });
 
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                panel.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                            withShift = true;
-                        }
-                    }
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                            withShift = false;
-                        }
-                        if (e.getKeyCode() == KeyEvent.VK_UP) {
-                            stepChange = 1;
-                        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                            stepChange = -1;
-                        }
-                    }
-                });
                 Runnable mouseDragChange = () -> {
                     if (anchorPoint.x == -1 && anchorPoint.y == -1) {
                         anchorPoint.x = e.getX();
@@ -191,6 +157,13 @@ public class Canvas {
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
+            public void mouseClicked(MouseEvent e) { // for polygon
+                if (!Dpressed) {
+                    Runnable newVertex = () -> polygoner.addVertex(new Point(e.getX(), e.getY()));
+                    change(newVertex);
+                }
+            }
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if (anchorPoint.x != -1 && anchorPoint.y != -1) {
                     Line current;
@@ -207,7 +180,15 @@ public class Canvas {
             }
         });
     }
-
+    public void clearCanvas() {
+        clear();
+        resetAnchorPoint();
+        lineList.clear();
+        previewLine.clear();
+        previewStrictLine.clear();
+        polygoner.resetPolygon();
+        img.present(panel.getGraphics());
+    }
     public void draw(){
         for (Line line: lineList) {
             liner.drawLine(img, line);
@@ -217,12 +198,16 @@ public class Canvas {
             dashedLiner.drawLine(img, dLine, dashedLineStep);
         }
 
-        polygoner.drawPolygon();
+        for (Line line: previewStrictLine) {
+            new LinerStrict().drawStrictLine(img, line.getP1(), line.getP2(), line.getColor());
+        }
 
+        polygoner.drawPolygon();
         img.present(panel.getGraphics());
     }
 
     private void predrawLine(Point p1, Point p2) {
+        previewStrictLine.clear();
         if (stepChange == -1) {
             dashedLineStep -= 2;
         } else if (stepChange == 1) {
@@ -232,24 +217,15 @@ public class Canvas {
             resetDashedLineStep();
         }
         stepChange = 0;
-        dashedLiner.drawLine(img, new Line(p1, p2, 0xff0000), dashedLineStep);
 
-        if(previewLine.size() == 0){
-            previewLine.add(new Line(p1, p2, 0xff0000));
-        }
-        else{
-            previewLine.clear();
-            previewLine.add(new Line(p1, p2, 0xff0000));
-        }
-        img.present(panel.getGraphics());
-        dashedLiner.drawLine(img, new Line(p1, p2, 0x2f2f2f), dashedLineStep);
+        previewLine.clear();
+        previewLine.add(new Line(p1, p2, 0xff0000));
     }
 
     private void predrawStrictLine(Point p1, Point p2) {
-        LinerStrict strictLiner = new LinerStrict();
-        strictLiner.drawStrictLine(img, p1, p2, 0xff0000);
-        img.present(panel.getGraphics());
-        strictLiner.drawStrictLine(img, p1, p2, 0x2f2f2f);
+        previewLine.clear();
+        previewStrictLine.clear();
+        previewStrictLine.add(new Line(p1, p2, 0xff0000));
     }
 
     private void resetAnchorPoint() {
@@ -278,14 +254,9 @@ public class Canvas {
         clear();
         update.run();
         draw();
-//            interface runnable
     }
-    Runnable test = () -> {
-
-    };
 
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(() -> new Canvas(600, 600).start());
     }
 
