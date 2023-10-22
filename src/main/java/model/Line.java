@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * Represents a line in 2D raster
+ */
 public class Line {
     private final int x1, y1, x2, y2;
     private final int color;

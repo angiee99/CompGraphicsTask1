@@ -36,7 +36,7 @@ public interface Raster {
      * @param r row address of the pixel
      * @return boolean indicating whether the given address is valid
      */
-    /*void*/ boolean /*Raster*/ setColor(int color, int c, int r);
+    boolean  setColor(int color, int c, int r);
 
     /**
      * Sets all the pixels to hold the provided color

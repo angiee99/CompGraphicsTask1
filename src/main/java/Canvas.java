@@ -4,7 +4,7 @@ import rasterization.RasterBI;
 import rasterops.LinerDashed;
 import rasterops.LinerStrict;
 import rasterops.LinerDDAII;
-import rasterops.PolygonerTrivial;
+import rasterops.PolygonerBasic;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -30,16 +30,15 @@ public class Canvas {
     private Point anchorPoint;
     private LinerDDAII liner;
     private LinerDashed dashedLiner;
-    private PolygonerTrivial polygoner;
+    private PolygonerBasic polygoner;
 
     private boolean withShift;
     private boolean Dpressed;
     private int dashedLineStep;
     private int stepChange;
 
-    //struktury
+    // structures
     private ArrayList<Line> lineList;
-
     private ArrayList<Line> previewLine;
     private ArrayList<Line> previewStrictLine;
 
@@ -54,7 +53,7 @@ public class Canvas {
         img = new RasterBI(width, height);
         liner = new LinerDDAII();
         dashedLiner = new LinerDashed();
-        polygoner = new PolygonerTrivial(img, 0x008000, 0x2f2f2f);
+        polygoner = new PolygonerBasic(img, 0x008000);
 
         lineList = new ArrayList<Line>();
         previewLine = new ArrayList<Line>();
@@ -91,10 +90,12 @@ public class Canvas {
                     clearCanvas();
                 }
 
+                // enables to draw a strict line
                 if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     withShift = true;
                 }
 
+                // enables to interactively delete vertex
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     Dpressed = true;
 
@@ -113,16 +114,15 @@ public class Canvas {
                         }
                         }
                     });
-
                 }
             }
-
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     withShift = false;
                 }
 
+                // enables to change the size of a dash in a dashed line
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     stepChange = 1;
                 } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -132,37 +132,39 @@ public class Canvas {
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     Dpressed = false;
                 }
-
             }
         });
 
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Runnable mouseDragChange = () -> {
-                    if (anchorPoint.x == -1 && anchorPoint.y == -1) {
-                        anchorPoint.x = e.getX();
-                        anchorPoint.y = e.getY();
-                    } else if (anchorPoint.x != -1 && anchorPoint.y != -1) {
-                        if (withShift) {
-                            predrawStrictLine(anchorPoint, new Point(e.getX(), e.getY()));
-                        } else {
-                            predrawLine(anchorPoint, new Point(e.getX(), e.getY()));
-                        }
+            Runnable mouseDragChange = () -> {
+                if (anchorPoint.x == -1 && anchorPoint.y == -1) {
+                    anchorPoint.x = e.getX();
+                    anchorPoint.y = e.getY();
+                } else if (anchorPoint.x != -1 && anchorPoint.y != -1) {
+                    if (withShift) {
+                        predrawStrictLine(anchorPoint, new Point(e.getX(), e.getY()));
+                    } else {
+                        predrawLine(anchorPoint, new Point(e.getX(), e.getY()));
                     }
-                };
-                change(mouseDragChange);
+                }
+            };
+            change(mouseDragChange);
             }
         });
 
         panel.addMouseListener(new MouseAdapter() {
+            // Adds a vertex to polygon
             @Override
-            public void mouseClicked(MouseEvent e) { // for polygon
+            public void mouseClicked(MouseEvent e) {
                 if (!Dpressed) {
                     Runnable newVertex = () -> polygoner.addVertex(new Point(e.getX(), e.getY()));
                     change(newVertex);
                 }
             }
+
+            // saves the line
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (anchorPoint.x != -1 && anchorPoint.y != -1) {
@@ -180,6 +182,11 @@ public class Canvas {
             }
         });
     }
+
+
+    /**
+     * Clears the canvas and resets all the structures saved
+     */
     public void clearCanvas() {
         clear();
         resetAnchorPoint();
@@ -189,6 +196,10 @@ public class Canvas {
         polygoner.resetPolygon();
         img.present(panel.getGraphics());
     }
+
+    /**
+     * Draws saved structures
+     */
     public void draw(){
         for (Line line: lineList) {
             liner.drawLine(img, line);
@@ -206,6 +217,11 @@ public class Canvas {
         img.present(panel.getGraphics());
     }
 
+    /**
+     * Draws a temporary dashed line based on given points
+     * @param p1
+     * @param p2
+     */
     private void predrawLine(Point p1, Point p2) {
         previewStrictLine.clear();
         if (stepChange == -1) {
@@ -222,26 +238,43 @@ public class Canvas {
         previewLine.add(new Line(p1, p2, 0xff0000));
     }
 
+    /**
+     * Draws a temporary strict line based on given points
+     * @param p1
+     * @param p2
+     */
     private void predrawStrictLine(Point p1, Point p2) {
         previewLine.clear();
         previewStrictLine.clear();
         previewStrictLine.add(new Line(p1, p2, 0xff0000));
     }
 
+    /**
+     * Resets the anchor point that is used in mouse drag
+     */
     private void resetAnchorPoint() {
         anchorPoint.x = -1;
         anchorPoint.y = -1;
     }
-
+    /**
+     * Resets the step that is dashed liner
+     */
     private void resetDashedLineStep() {
         dashedLineStep = 10;
         stepChange = 0;
     }
 
+    /**
+     * Paints the canvas in its background color
+     */
     public void clear() {
         img.clear(0x2f2f2f);
     }
 
+    /**
+     * Present the canvas
+     * @param graphics
+     */
     public void present(Graphics graphics) {
         img.present(graphics);
     }
@@ -250,6 +283,10 @@ public class Canvas {
         panel.repaint();
     }
 
+    /**
+     * Clears the canvas, provide the given update, present the canvsa
+     * @param update function
+     */
     public void change(Runnable update){
         clear();
         update.run();

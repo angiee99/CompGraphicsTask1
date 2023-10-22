@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
+/**
+ * Represents a 2D raster buffered image
+ */
 public class RasterBI implements Raster{
 
     private final BufferedImage img;

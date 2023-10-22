@@ -1,5 +1,7 @@
 package model;
-
+/**
+ * Represents a Point in 2D raster
+ */
 public class Point {
     public int x, y;
     public Point(int x, int y){

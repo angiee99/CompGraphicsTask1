@@ -4,10 +4,21 @@ import model.Line;
 import model.Point;
 import rasterization.Raster;
 
-
+/**
+ * Liner implementation for drawing 2D lines with DDA II algorithm
+ */
 public class LinerDDAII implements Liner {
+    /**
+     * Draws a line based on end points coordinates
+     * @param rastr
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param color
+     */
     public void drawLine(Raster rastr, double x1, double y1, double x2, double y2, int color){
-        if(Math.abs(y2 - y1) < Math.abs(x2 - x1)){// osa y = x
+        if(Math.abs(y2 - y1) < Math.abs(x2 - x1)){ // ridici osa x
             if(x1 > x2){//swap
                 double temp = x1;
                 x1 = x2;
@@ -27,7 +38,7 @@ public class LinerDDAII implements Liner {
                 y += k;
             } while (x <= x2);
         }
-        else{ // ridici osa x
+        else{ // ridici osa y
             if(y1 > y2){ //swap
                 double temp = x1;
                 x1 = x2;
@@ -47,10 +58,22 @@ public class LinerDDAII implements Liner {
         }
     }
 
+    /**
+     * Draws a line based on two given points
+     * @param rastr
+     * @param p1
+     * @param p2
+     * @param color
+     */
     public void drawLine(Raster rastr, Point p1, Point p2, int color){
         drawLine(rastr, p1.x, p1.y, p2.x, p2.y, color);
     }
 
+    /**
+     * Draws a line by accepting a Line object
+     * @param rastr
+     * @param line
+     */
     public void drawLine(Raster rastr, Line line){
         drawLine(rastr, line.getX1(), line.getY1(), line.getX2(), line.getY2(), line.getColor());
     }

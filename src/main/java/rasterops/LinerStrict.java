@@ -5,17 +5,26 @@ import model.Point;
 import rasterization.Raster;
 
 public class LinerStrict extends LinerDDAII {
+    /**
+     * Draws a strict line returned by getStrictLine method and uses LinerDDAII method drawLine
+     * @param rastr
+     * @param p1
+     * @param p2
+     * @param color
+     */
     public void drawStrictLine(Raster rastr, Point p1, Point p2, int color){
         Line lineTodraw = getStrictLine(p1, p2, color);
         drawLine(rastr, lineTodraw);
     }
 
+
     /**
-    based on starting and ending point it is decided if the line will be
-     - horizontal
-     - vertical
-     - diagonal.
-     The strict line of one of 3 types is returned
+     * Returns a strict line based on starting and ending point of one of three types:
+     * horizontal, vertical, diagonal
+     * @param p1
+     * @param p2
+     * @param color
+     * @return horizontal/vertical/diagonal Line object
      */
     public Line getStrictLine( Point p1, Point p2, int color){
         double dy = p2.y - p1.y;

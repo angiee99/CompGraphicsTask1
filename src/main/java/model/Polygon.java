@@ -1,26 +1,37 @@
 package model;
-
-import rasterops.PolygonerTrivial;
-
 import java.util.ArrayList;
-import java.util.Optional;
 
+/**
+ * Represents a polygon in 2D raster by its vertices
+ */
 public class Polygon {
     private ArrayList<Point> vertices;
     public Polygon(){
         vertices = new ArrayList<Point>();
     }
 
+    /**
+     * Adds a new vertex to the corresponding index in the list,
+     * so that the order of adjacent vertices is saved,
+     * and ensures that the new point is added to the closest edge
+     * @param p
+     */
     public void addVertex(Point p) {
         if (getVertexCount() < 2) {
             vertices.add(p);
         } else if (getVertexCount() == 2) {
-            addVertexInBetween(p, 1);
+            addVertexAtIndex(p, 1);
         } else {
             int[] edge = closestEdge(p);
-            addVertexInBetween(p, edge[0] + 1);
+            addVertexAtIndex(p, edge[0] + 1);
         }
     }
+
+    /**
+     * Searches
+     * @param p point
+     * @return indexes of points that form the closest edge to point p
+     */
     private int[] closestEdge(Point p){
         int[] closestEdge = new int[]{0, 1};
         double minDistance = distanceTo(p, getVertex(0), getVertex(1) );
@@ -41,6 +52,13 @@ public class Polygon {
         return closestEdge;
     }
 
+    /**
+     * Calculates the distance between point and edge formed by p1 and p2
+     * @param point
+     * @param p1
+     * @param p2
+     * @return
+     */
     private double distanceTo(Point point, Point p1, Point p2) {
         double x1 = p1.x;
         double y1 = p1.y;
@@ -79,51 +97,55 @@ public class Polygon {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private void addVertexInBetween(Point newVert, int index){
+    /**
+     * Adds new vertex at the given index
+     * @param newVert
+     * @param index
+     */
+    private void addVertexAtIndex(Point newVert, int index){
         vertices.add(index, newVert);
     }
 
+    /**
+     * Removes vertex from the list
+     * @param p
+     */
     public void removeVertex(Point p){
         vertices.remove(p);
     }
+
+    /**
+     * Determines if two points are close enough to consider them referring to the same point in space
+     * @param p1
+     * @param p2
+     * @return true if close enough
+     */
     public boolean isCloseEnough(Point p1, Point p2){
         double minDistance = 10;
         double distance = Math.sqrt(Math.abs((p2.x - p1.x)^2) + Math.abs((p2.y - p1.y)^2));
         return distance <= minDistance;
     }
 
-    public Point getFisrtVertex(){
-        return vertices.get(0);
-    }
-
+    /**
+     *
+     * @param index
+     * @return vertex at passed index
+     */
     public Point getVertex(int index){
             return vertices.get(index);
     }
 
-    public Point getLastAddedVert(){
-        return vertices.get(vertices.size() - 1);
-    }
-
-    public Point getVertByPosition(int pos){
-
-        return vertices.get(pos);
-    }
-
-    public Optional<Integer> getVertexIndex(Point p){
-        if(isVertex(p)){
-            return Optional.of(vertices.indexOf(p));
-        }
-        return Optional.empty();
-    }
-
-    public boolean isVertex(Point p){
-        return vertices.contains(p); // returns false because it is another object
-    }
-
+    /**
+     *
+     * @return number of vertices in polygon
+     */
     public int getVertexCount(){
         return vertices.size();
     }
 
+    /**
+     * deletes all saved vertices of a polygon
+     */
     public void clear(){
         vertices.clear();
     }
